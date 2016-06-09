@@ -3,7 +3,8 @@
  * To represent a music editor
  * Assumptions:
  * Once there is already a note at a given note and beat position,
- * there cannot be another one added.
+ * there cannot be another one added//TODO
+ * Invariant: the beat number given to the note must always be less than beatLength
  */
 
 public interface MusicEditorModel<K> {
