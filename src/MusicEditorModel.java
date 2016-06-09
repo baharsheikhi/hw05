@@ -17,6 +17,7 @@ public interface MusicEditorModel<K> {
      * rendered as "  |  ". When a note is not played, five spaces are rendered
      * (as "     ")
       * @return a string representation of all the beats and the notes in them
+     * Throws an IllegalArgumentException if there are no notes
      */
     String getMusicState();
 
@@ -25,9 +26,8 @@ public interface MusicEditorModel<K> {
      * @param beat the beat where the note should be added
      * @param note the note to be added at the beat
      * Throws an IllegalArgumentException if the beat number is less than 0, or greater than the
-     *  number of notes minus one.
-     * Throws an IllegalArgumentException if the note is invalid--ie. not played in the piece.
-     * Throws an IllegalArgumentException if there is already a note there.
+     *  number of notes.
+     * Throws an IllegalArgumentException if the note does not fit
      */
      void addNote(int beat, K note);
 
@@ -38,7 +38,6 @@ public interface MusicEditorModel<K> {
      *  Throws an IllegalArgumentException if the beat number is less than 0, or greater than the
      *  number of notes minus one.
      *  Throws an IllegalArgumentException if the note is invalid--ie. not played in the piece.
-     *  Throws an IllegalArgumentException if there is no note there.
      */
      void removeNote(int beat, K note);
 
@@ -57,18 +56,44 @@ public interface MusicEditorModel<K> {
     void changeNote(int beat, K oldNote, K newNote);
 
     /**
-     * Takes the given musicEditorModel and adds it to the end of this one.
+     * Takes the given music, from the specified beats,
+     * and adds it to the end of this one.
      * @param other the other musicEditorModel to play after this one.
      *  Throws an IllegalArgumentException if the given music is null.
      *  Throws an IllegalArgumentException if the given music has no notes.
      */
-    void musicConcat(MusicEditorModel<K> other);
+    MusicEditorModel<K> musicConcat(MusicEditorModel<K> other);
 
     /**
      * Takes a piece of music and plays it simultaneously to this piece.
       * @param other the music to be played simultaneously.
+     *  @param from the beat from which the other song is placed in this song
      *  Throws an IllegalArgumentException if the given music is null.
      *  Throws an IllegalArgumentException if the given music has no notes.
+     *  Throws an IllegalArgumentException if the from is less than 0, or
+     *  greater than the beat size
      */
-    void mixMusic(MusicEditorModel<K> other);
+    MusicEditorModel<K> mixMusic(MusicEditorModel<K> other, int from);
+
+    /**
+     * Returns the length of this music (in beats) that have notes in them
+     * @return the number of beats this song has
+     *
+     */
+    int beatLength();
+
+    /**
+     * Trims this song from the given beat until the given beat
+     * @param from the beat to start from
+     * @param to the beat to end with
+     *  Throws an IllegalArgumentException if the from or the two is less than 0,
+     *  or greater than the beat length
+     *  Throws an IllegalArgumentException if the from is greater than the to.
+     */
+    void trim(int from, int to);
+
+    /**
+     * Doubles the length of this music editor's notes
+     */
+    void addBeats();
 }
