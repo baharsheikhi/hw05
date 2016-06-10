@@ -6,57 +6,46 @@ import static org.junit.Assert.*;
  * Created by bahar on 6/8/16.
  */
 public class NoteTest {
-  Note C = new Note(Note.Pitch.C, 4, 2, 0);
-  Note Ccopy = new Note(Note.Pitch.C, 4, 2, 0);
-  Note F = new Note(Note.Pitch.F, 4, 2, 0);
-  Note rest = new Note(Note.Pitch.REST, 4, 2, 0);
-  Note Fhigh = new Note(Note.Pitch.F, 4,9, 0);
+  Note C = new Note(Note.Pitch.C, 4, 2, 0, true);
+  Note Ccopy = new Note(Note.Pitch.C, 4, 2, 0, true);
+  Note F = new Note(Note.Pitch.F, 4, 2, 0, true);
+  Note Fhigh = new Note(Note.Pitch.F, 4,9, 0, true);
 
   @Test
   public void testRenderBasicNote() {
     assertEquals("  X  \n" +
             "  |  \n" +
             "  |  \n" +
-            "  |  \n", C.toString());
-    assertEquals("C2", C.getPitchToString());
-    assertEquals(F.toString(), C.toString());
-    assertNotEquals(F.getPitchToString(), C.getPitchToString());
-  }
-
-  @Test
-  public void testRenderRest() {
-    assertEquals("     \n"+"     \n"+"     \n"+"     \n", rest.toString());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testPitchRenderException() {
-    rest.getPitchToString();
+            "  |  \n", C.getNoteState());
+    assertEquals("C2", C.toString());
+    assertEquals(F.getNoteState(), C.getNoteState());
+    assertNotEquals(F.toString(), C.toString());
   }
 
   //testing constructor exceptions
   @Test(expected = IllegalArgumentException.class)
   public void testDurationExceptionNegative() {
-    Note error = new Note(Note.Pitch.B, -1, 2, 0);
+    Note error = new Note(Note.Pitch.B, -1, 2, 0, true);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testDurationExceptionTooBig() {
-    Note error = new Note(Note.Pitch.B, 5, 2, 0);
+    Note error = new Note(Note.Pitch.B, 5, 2, 0, true);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testOctaveExceptionNegative() {
-    Note error = new Note(Note.Pitch.B, 3, -1, 0);
+    Note error = new Note(Note.Pitch.B, 3, -1, 0, true);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testOctaveExceptionTooBig() {
-    Note error = new Note(Note.Pitch.B, 3, 10, 0);
+    Note error = new Note(Note.Pitch.B, 3, 10, 0, true);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testBeatException() {
-    Note error = new Note(Note.Pitch.B, 3, 5, -1);
+    Note error = new Note(Note.Pitch.B, 3, 5, -1, true);
   }
 
   @Test
@@ -64,7 +53,6 @@ public class NoteTest {
     assertEquals(this.C, this.C);
     assertEquals(this.Ccopy, this.C);
     assertNotEquals(this.C, this.F);
-    assertNotEquals(this.rest, this.F);
   }
 
   @Test

@@ -94,7 +94,7 @@ public interface MusicEditorModel<K> {
     void trim(int from, int to);
 
     /**
-     * Doubles the length of this music editor's notes
+     * Doubles the length of this music editor's notes by the given amount
      */
-    void addBeats();
+    void addBeats(int increase);
 }
