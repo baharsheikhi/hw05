@@ -91,7 +91,28 @@ public class MusicEditorModelImpl implements MusicEditorModel<Note> {
 
     @Override
     public MusicEditorModel<Note> musicConcat(MusicEditorModel<Note> other) {
-        return null;
+        MusicEditorModelImpl ret = new MusicEditorModelImpl();
+
+        this.trimToSize();
+        for (int i = 0; i < this.notes.size(); i++) {
+            for (int n = 0; n < this.notes.get(i).size(); n++) {
+                try {
+                    ret.addNote(i, notes.get(i).get(n));
+                }
+                catch (IllegalArgumentException e) {
+                    this.addBeats(this.notes.size());
+                    ret.addNote(i, notes.get(i).get(n));
+                }
+            }
+        }
+
+        for (int i = 0; i < other.beatLength(); i++) {
+
+        }
+
+
+
+        return ret;
     }
 
     @Override
@@ -178,9 +199,18 @@ public class MusicEditorModelImpl implements MusicEditorModel<Note> {
     }
 
     private void padMusicStateHelp(StringBuffer buffer, Note prev, Note current, int n) {
-        if (prev.getOctave() == current.getOctave()) {
-            for (int p = 0; p < (current.getPitch().ordinal() - prev.getPitch().ordinal() - n); p++) {
-                buffer.append("     ");
+        if (prev.getOctave() == current.getOctave() && prev.equals(minNote)) {
+            if (prev.getOctave() == current.getOctave() && !(prev.equals(current)) && prev !=minNote) {
+                buffer.replace(buffer.lastIndexOf("  |  "), buffer.lastIndexOf("  |  "), current.getNoteState());
+                buffer.deleteCharAt(buffer.lastIndexOf("  X  ") + 5);
+                buffer.deleteCharAt(buffer.lastIndexOf("  X  ") + 6);
+                buffer.deleteCharAt(buffer.lastIndexOf("  X  ") + 7);
+            }
+            else {
+                for (int p = 0; p < (current.getPitch().ordinal() - prev.getPitch().ordinal() - n); p++) {
+                    buffer.append("     ");
+                }
+                buffer.append(current.getNoteState());
             }
         } else {
             int octaveNumber = prev.getOctave();
@@ -198,9 +228,21 @@ public class MusicEditorModelImpl implements MusicEditorModel<Note> {
             for (int p = 0; p < (current.getPitch().ordinal() - Note.Pitch.C.ordinal() - n); p++) {
                 buffer.append("     ");
             }
+            buffer.append(current.getNoteState());
         }
 
-        buffer.append(current.getNoteState());
     }
+
+    private void trimToSize() {
+        for (int i = this.beatLength(); i < this.notes.size(); i++) {
+            if (notes.get(i).size() != 0) {
+                throw new IllegalArgumentException("cannot trim properly.");
+            }
+                notes.remove(i);
+                i++;
+            }
+        }
+    }
+
 
 }

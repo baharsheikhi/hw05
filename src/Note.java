@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  * can't be more than 4 octave: 0-9
  */
 
-public class Note implements Comparable<Note> {
+public class Note extends Sound implements Comparable<Note> {
 
   public enum Pitch {
     C, CSHARP, D, DSHARP, E, F, FSHARP, G, GSHARP, A, ASHARP, B;
@@ -99,9 +99,7 @@ public class Note implements Comparable<Note> {
    * @param duration The duration of the note
    */
   public Note(Pitch pitch, int duration, int octave, int beat, boolean isHead) {
-    if (duration < 0 || duration > 4) {
-      throw new IllegalArgumentException("Please enter a valid duration");
-    }
+      super(duration);
 
     if (octave < 0) {
       throw new IllegalArgumentException("Please enter a valid octave number");
@@ -111,13 +109,13 @@ public class Note implements Comparable<Note> {
       throw new IllegalArgumentException("Please enter a valid beat number");
     }
     this.pitch = pitch;
-    this.duration = duration;
     this.octave = octave;
     this.beat = beat;
       this.isHead = isHead;
   }
 
-  public String getNoteState() {
+  @Override
+    public String getNoteState() {
     if (isHead) {
         return "  X  ";
     }
@@ -172,17 +170,12 @@ public class Note implements Comparable<Note> {
   }
 
   private final Pitch pitch;
-  private final int duration;
   private final int octave;
   private final int beat;
     private final boolean isHead;
 
   protected int getOctave() {
     return this.octave;
-  }
-
-  protected int getDuration() {
-    return this.duration;
   }
 
   protected Pitch getPitch() {
@@ -200,6 +193,9 @@ public class Note implements Comparable<Note> {
 
     protected boolean isHead() {
         return this.isHead;
+    }
+    protected int getBeat() {
+        return this.beat;
     }
 
 }
