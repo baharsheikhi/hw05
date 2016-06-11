@@ -291,6 +291,127 @@ public class MusicEditorTest {
                 "27\n", this.model2ToAddBeatsPrint.getMusicState());
     }
 
+    @Test
+    public void createMediumModel() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+
+        this.modelToAddRangePrint.trim(99, 215);
+        assertEquals(100, this.modelToAddRangePrint.beatLength());
+    }
+
+    //FIXME this is very slow
+    @Test
+    public void createBigModel() {
+        this.initData();
+        for (int i = 0; i < 2000; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+        this.modelToAddRangePrint.trim(2000, 5831);
+        assertEquals(2001, this.modelToAddRangePrint.beatLength());
+    }
+
+    @Test
+    public void testBigRange() {
+        this.initData();
+        this.modelToAddRangePrint.addNote(0, new Note(Note.Pitch.C, 1, 0, 0, true));
+        this.modelToAddRangePrint.addNote(1, new Note(Note.Pitch.B, 1, 500, 1, true));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTrimException1() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+        this.modelToAddRangePrint.trim(-1, 5);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTrimException2() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+        this.modelToAddRangePrint.trim(10, 5);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTrimException3() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+        this.modelToAddRangePrint.trim(10, -5);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTrimException4() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+        this.modelToAddRangePrint.trim(0, 10000);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTrimException5() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+        this.modelToAddRangePrint.trim(1000, 1001);
+
+    }
+
+    @Test
+    public void testBigConcat() {
+        this.initData();
+        for (int i = 0; i < 500; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= modelToAddRangePrint.beatLength() - 1) {
+                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
+            }
+        }
+
+        for (int i = 0; i < 100; i++) {
+            this.model2ToAddBeatsPrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+            if (i >= model2ToAddBeatsPrint.beatLength() - 1) {
+                this.model2ToAddBeatsPrint.addBeats(this.model2ToAddBeatsPrint.beatLength() * 2);
+            }
+        }
+
+        modelToAddRangePrint.musicConcat(model2ToAddBeatsPrint);
+        System.out.print(modelToAddRangePrint.getMusicState());
+
+    }
+
     //TODO test a big number of notes
     //TODO test a big number of range
     //TODO trim's exceptions
