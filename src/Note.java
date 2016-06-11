@@ -89,6 +89,38 @@ public class Note extends Sound implements Comparable<Note> {
           return ret;
       }
 
+      private Pitch getPrevPitch() {
+          Pitch ret = null;
+          switch (this) {
+              case C:
+                  return B;
+              case CSHARP:
+                  return C;
+              case D:
+                  return CSHARP;
+              case DSHARP:
+                  return D;
+              case E:
+                  return DSHARP;
+              case F:
+                  return E;
+              case FSHARP:
+                  return F;
+              case G:
+                  return FSHARP;
+              case GSHARP:
+                  return G;
+              case A:
+                  return GSHARP;
+              case ASHARP:
+                  return A;
+              case B:
+                  return ASHARP;
+              default:
+          }
+          return ret;
+      }
+
   }
 
 
@@ -188,6 +220,15 @@ public class Note extends Sound implements Comparable<Note> {
         }
         else {
             return new Note(this.pitch.getNextPitch(), this.duration, this.octave, this.beat, this.isHead);
+        }
+    }
+
+    protected Note getPrevNote() {
+        if (this.pitch == Pitch.C) {
+            return new Note(Pitch.B, this.duration, this.octave - 1, this.beat, this.isHead);
+        }
+        else {
+            return new Note(this.pitch.getPrevPitch(), this.duration, this.octave, this.beat, this.isHead);
         }
     }
 

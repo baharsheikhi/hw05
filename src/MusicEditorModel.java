@@ -7,7 +7,7 @@
  * Invariant: the beat number given to the note must always be less than beatLength
  */
 
-public interface MusicEditorModel<K> {
+public interface MusicEditorModel<K>  extends SongUnit<K> {
     /**
      * Gets the representation of the notes in this music.
      * A column of numbers represents the beats.
@@ -43,27 +43,13 @@ public interface MusicEditorModel<K> {
      void removeNote(int beat, K note);
 
     /**
-     * Changes the given note at the given beat to a new note.
-      * @param beat the beat where the notes are
-     * @param oldNote the beat to be removed
-     * @param newNote the beat to replace it with
-     * Throws an IllegalArgumentException if the beat number is less than 0, or greater than the
-     *  number of notes minus one.
-     *  Throws an IllegalArgumentException if either note is invalid--ie. not played in the piece.
-     *  Throws an IllegalArgumentException if the old note is not there.
-     *  Throws an IllegalArgumentException if there is already a note at the space of the new note.
-     *
-     */
-    void changeNote(int beat, K oldNote, K newNote);
-
-    /**
      * Takes the given music, from the specified beats,
      * and adds it to the end of this one.
      * @param other the other musicEditorModel to play after this one.
      *  Throws an IllegalArgumentException if the given music is null.
      *  Throws an IllegalArgumentException if the given music has no notes.
      */
-    MusicEditorModel<K> musicConcat(MusicEditorModel<K> other);
+    void musicConcat(MusicEditorModel<K> other);
 
     /**
      * Takes a piece of music and plays it simultaneously to this piece.
@@ -74,7 +60,7 @@ public interface MusicEditorModel<K> {
      *  Throws an IllegalArgumentException if the from is less than 0, or
      *  greater than the beat size
      */
-    MusicEditorModel<K> mixMusic(MusicEditorModel<K> other, int from);
+    void mixMusic(MusicEditorModel<K> other, int from);
 
     /**
      * Returns the length of this music (in beats) that have notes in them

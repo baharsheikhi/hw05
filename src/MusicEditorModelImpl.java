@@ -6,54 +6,50 @@ import java.util.*;
  * invariant: notelength represents the size of the external array. Is positive
  * rendernotelength represents how many of these notes to render. Is positive.
  */
-public class MusicEditorModelImpl implements MusicEditorModel<Note> {
+public class MusicEditorModelImpl extends AMusicEditorModel {
     @Override
     public String getMusicState() {
-        //is this the best way to tell?
-        if (this.notes.get(0).size() == 0) {
+        if (this.minNote.equals(new Note(Note.Pitch.B, 0, Integer.MAX_VALUE, 0, true)) && this.maxNote == null) {
             throw new IllegalArgumentException("add notes to display the editor");
         }
 
         StringBuffer ret = new StringBuffer();
         //pads first row appropriately
-        for (int i = 0; i < (int) (Math.log10(beatNumberToRender) + 1); i++) {
+        for (int i = 0; i < (int) (Math.log10(this.beatLength()) + 1); i++) {
             ret.append(" ");
         }
 
         ret.append(this.renderPitchNotes());
-        ret.append(" ");
+
+        for (int i = 0; i < (int) (Math.log10(this.beatLength())); i++) {
+            ret.append(" ");
+        }
+
 
 
         //starts padding an arbritrary amount of notes
-        for (int i = 0; i < this.beatNumberToRender; i++) {
+        for (int i = 0; i < this.beatLength(); i++) {
             //pads the beginning of each row appropriately
-            for (int j = 0; j < (((int) Math.log10(beatNumberToRender)) - ((int) Math.log10(i))); j++) {
+            for (int j = 0; j < (((int) Math.log10(beatLength())) - ((int) Math.log10(i))); j++) {
                 ret.append(" ");
             }
             ret.append(Integer.toString(i));
-            if (this.notes.get(i).size() != 0) {
-                this.padMusicStateHelp(ret, this.minNote, this.notes.get(i).get(0), 0);
-                for (int n = 1; n < this.notes.get(i).size(); n++) {
-                    this.padMusicStateHelp(ret, this.notes.get(i).get(n - 1), this.notes.get(i).get(n), n);
+            if (this.notesAtBeatSize(i) != 0) {
+                this.padMusicStateHelp(ret, this.minNote, this.getNote(i, 0), 0);
+                for (int n = 1; n < this.notesAtBeatSize(i); n++) {
+                    this.padMusicStateHelp(ret, this.getNote(i, n-1), this.getNote(i, n), n);
                 }
             }
 
             ret.append("\n");
 
         }
-
         return ret.toString();
 
     }
 
     @Override
     public void addNote(int beat, Note newNote) {
-        if (beat < 0 || beat > this.beatLength()) {
-            throw new IllegalArgumentException("Please enter a valid beat number");
-        }
-        if (newNote.getDuration() + beat > this.beatNumberToRender) {
-            throw new IllegalArgumentException("Note doesn't fit");
-        }
 
         if (newNote.compareTo(minNote) < 0) {
             minNote = newNote;
@@ -61,116 +57,72 @@ public class MusicEditorModelImpl implements MusicEditorModel<Note> {
             maxNote = newNote;
         }
 
-        this.notes.get(beat).add(newNote);
-        Collections.sort(this.notes.get(beat));
-        for (int i = 1; i < newNote.getDuration(); i++) {
-            this.notes.get(beat + i).add(new Note(newNote.getPitch(), newNote.getDuration(), newNote.getOctave(), beat, false));
-            Collections.sort(this.notes.get(beat + i));
-        }
+        super.addNote(beat, newNote);
     }
 
     @Override
     public void removeNote(int beat, Note note) {
-        if (beat < 0 || beat > this.beatLength() - 1) {
-            throw new IllegalArgumentException("Enter valid beat");
+        if (note.equals(this.maxNote)) {
+            this.maxNote = this.maxNote.getPrevNote();
         }
-        if (this.notes.get(beat).remove(note) == false) {
-            throw new IllegalArgumentException("Please enter a valid note to remove");
+        if (note.equals(this.minNote)) {
+            this.minNote = this.minNote.getNextNote();
         }
-        for (int i = 0; i < note.getDuration(); i++) {
-            this.notes.get(beat + i).remove(note);
-        }
-
+        super.removeNote(beat, note);
     }
 
     @Override
-    public void changeNote(int beat, Note oldNote, Note newNote) {
-        this.removeNote(beat, oldNote);
-        this.addNote(beat, newNote);
-    }
-
-    @Override
-    public MusicEditorModel<Note> musicConcat(MusicEditorModel<Note> other) {
-        MusicEditorModelImpl ret = new MusicEditorModelImpl();
-
+    public void musicConcat(MusicEditorModel<Note> other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Please enter a a model that is not null");
+        }
         this.trimToSize();
-        for (int i = 0; i < this.notes.size(); i++) {
-            for (int n = 0; n < this.notes.get(i).size(); n++) {
-                try {
-                    ret.addNote(i, notes.get(i).get(n));
-                }
-                catch (IllegalArgumentException e) {
-                    this.addBeats(this.notes.size());
-                    ret.addNote(i, notes.get(i).get(n));
-                }
-            }
-        }
-
-        for (int i = 0; i < other.beatLength(); i++) {
-
-        }
-
-
-
-        return ret;
+        other.addToMusic(this, this.beatLength());
     }
 
     @Override
-    public MusicEditorModel<Note> mixMusic(MusicEditorModel<Note> other, int from) {
-        return null;
-    }
-
-    @Override
-    public int beatLength() {
-        return this.beatNumberToRender;
-    }
-
-    @Override
-    public void trim(int from, int to) {
-        List<ArrayList<Note>> newList = this.notes.subList(from, to);
-        this.notes.clear();
-        for (int i = 0; i < newList.size(); i++) {
-            this.notes.set(i, newList.get(i));
+    public void mixMusic(MusicEditorModel<Note> other, int from) {
+        if (other == null) {
+            throw new IllegalArgumentException("Please enter a model that is not null");
         }
-
-        //TODO update the instance variables and throw exceptions
+        if (from < 0 || from > this.beatLength()) {
+            throw new IllegalArgumentException("Please enter a valid starting point");
+        }
+        other.addToMusic(this, from);
     }
+
 
     @Override
     public void addBeats(int increase) {
 
-        if ((this.beatNumberToRender + increase) >= internalBeats) {
-            this.expandInteralBeats();
+        if ((this.beatLength() + increase) >= internalBeats) {
+            //FIXME
+            this.expandInteralBeats((int) Math.pow((double) increase, 2));
         }
 
         this.addBeatNumberToRender(increase);
 
     }
 
+
     /**
      * Constructs an empty list of notes
      */
     public MusicEditorModelImpl() {
-        this.notes = new ArrayList<ArrayList<Note>>();
-        for (int i = 0; i < 10; i++) {
-            notes.add(new ArrayList<Note>());
-        }
+        super();
         this.maxNote = null;//new Note(Note.Pitch.C, 0, 0, 0);
         this.minNote = new Note(Note.Pitch.B, 0, Integer.MAX_VALUE, 0, true);
         this.internalBeats = 10;
-        this.beatNumberToRender = 8;
     }
 
-    private final ArrayList<ArrayList<Note>> notes;
     Note maxNote;
     Note minNote;
     int internalBeats;
-    int beatNumberToRender;
 
     private String renderPitchNotes() {
         StringBuffer ret = new StringBuffer();
         ret.append(Note.pitchRender(this.minNote.getPitch(), this.minNote.getOctave()));
-        if (this.maxNote != null) {
+        if (this.maxNote != null && !this.maxNote.equals(this.minNote)) {
             Note n = this.minNote.getNextNote();
             while (n.compareTo(maxNote) < 0) {
                 ret.append(Note.pitchRender(n.getPitch(), n.getOctave()));
@@ -182,21 +134,19 @@ public class MusicEditorModelImpl implements MusicEditorModel<Note> {
         return ret.toString();
     }
 
-    private void expandInteralBeats() {
-        for (int i = 0; i < internalBeats; i++) {
-            notes.add(new ArrayList<Note>());
+    @Override
+    protected void expandInteralBeats(int factor) {
+        for (int i = 0; i < (internalBeats * factor); i++) {
+            this.addBeatToNotes(new ArrayList<Note>());
         }
 
-        this.doubleInternalBeats();
+        this.doubleInternalBeats(factor);
     }
 
-    private void doubleInternalBeats() {
-        internalBeats = internalBeats * 2;
+    private void doubleInternalBeats(int factor) {
+        internalBeats = internalBeats * factor;
     }
 
-    private void addBeatNumberToRender(int increase) {
-        this.beatNumberToRender += increase;
-    }
 
     private void padMusicStateHelp(StringBuffer buffer, Note prev, Note current, int n) {
         if (prev.getOctave() == current.getOctave() && prev.equals(minNote)) {
@@ -233,16 +183,10 @@ public class MusicEditorModelImpl implements MusicEditorModel<Note> {
 
     }
 
-    private void trimToSize() {
-        for (int i = this.beatLength(); i < this.notes.size(); i++) {
-            if (notes.get(i).size() != 0) {
-                throw new IllegalArgumentException("cannot trim properly.");
-            }
-                notes.remove(i);
-                i++;
-            }
-        }
+
+    @Override
+    protected void trimToSize() {
+        super.trimToSize();
+        this.internalBeats = this.beatLength();
     }
-
-
 }
