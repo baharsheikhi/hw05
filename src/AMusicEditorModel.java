@@ -17,10 +17,10 @@ public  abstract class AMusicEditorModel implements MusicEditorModel<Note> {
         if (beat < 0 || beat > this.beatLength()) {
             throw new IllegalArgumentException("Please enter a valid beat number");
         }
-        if (newNote.getDuration() + beat > this.beatLength()) {
-            throw new IllegalArgumentException("Note doesn't fit");
-        }
 
+        if (newNote.getDuration() + beat > this.beatLength()) {
+            this.addBeats(newNote.getDuration());
+        }
         this.notes.get(beat).add(newNote);
         Collections.sort(this.notes.get(beat));
         for (int i = 1; i < newNote.getDuration(); i++) {
@@ -70,18 +70,9 @@ public  abstract class AMusicEditorModel implements MusicEditorModel<Note> {
         if (from < 0 || to < 0 || from > this.beatLength() || to > this.beatLength() || from > to) {
             throw new IllegalArgumentException("Please enter valid start and end points");
         }
+        List<ArrayList<Note>> sublist = this.notes.subList(from, to);
+        this.notes.removeAll(sublist);
         this.beatNumberToRender -= to - from;
-        int i = from;
-        while (i < to) {
-            int j = 0;
-            while (j < this.notes.get(i).size()) {
-                if (this.notes.get(i).get(j).isHead()) {
-                    this.removeNote(i, this.notes.get(i).get(j));
-                }
-            }
-            this.notes.remove(i);
-            i++;
-        }
     }
 
     private final ArrayList<ArrayList<Note>> notes;
@@ -105,7 +96,7 @@ public  abstract class AMusicEditorModel implements MusicEditorModel<Note> {
             notes.remove(i);
         }
     }
-    protected abstract void expandInteralBeats(int factor);
+    protected abstract void expandInteralBeats(int increase);
     protected void addBeatToNotes(ArrayList<Note> beatRow) {
         this.notes.add(beatRow);
     }
@@ -123,6 +114,6 @@ public  abstract class AMusicEditorModel implements MusicEditorModel<Note> {
         for (int i = 0; i < 10; i++) {
             notes.add(new ArrayList<Note>());
         }
-        this.beatNumberToRender = 8;
+        this.beatNumberToRender = 0;
     }
 }

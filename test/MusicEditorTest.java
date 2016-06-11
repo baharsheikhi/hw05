@@ -23,8 +23,7 @@ public class MusicEditorTest {
     @Test
     public void testNoNotesBeatLength() {
         this.initData();
-        //was originally 0
-        assertEquals(8, this.modelToAddRangePrint.beatLength());
+        assertEquals(0, this.modelToAddRangePrint.beatLength());
     }
 
     @Test
@@ -34,17 +33,12 @@ public class MusicEditorTest {
         assertEquals("   E4 \n" +
                 "0  X  \n" +
                 "1  |  \n" +
-                "2  |  \n" +
-                "3\n" +
-                "4\n" +
-                "5\n" +
-                "6\n" +
-                "7\n", modelToAddRangePrint.getMusicState());
+                "2  |  \n", modelToAddRangePrint.getMusicState());
 
         this.model2ToAddBeatsPrint.addNote(0, new Note(Note.Pitch.E, 3, 4, 0, true));
         assertEquals(this.modelToAddRangePrint.getMusicState(), this.model2ToAddBeatsPrint.getMusicState());
         //changed
-        assertEquals(8, this.modelToAddRangePrint.beatLength());
+        assertEquals(3, this.modelToAddRangePrint.beatLength());
     }
 
     @Test
@@ -57,11 +51,8 @@ public class MusicEditorTest {
                 "1  |  \n" +
                 "2  X    \n" +
                 "3  |  \n" +
-                "4\n" +
-                "5\n" +
-                "6\n" +
-                "7\n", modelToAddRangePrint.getMusicState());
-        assertEquals(8, this.modelToAddRangePrint.beatLength());
+                "4\n", modelToAddRangePrint.getMusicState());
+        assertEquals(5, this.modelToAddRangePrint.beatLength());
     }
 
     @Test
@@ -75,10 +66,7 @@ public class MusicEditorTest {
                 "1\n" +
                 "2  X  \n" +
                 "3  |  \n" +
-                "4\n" +
-                "5\n" +
-                "6\n" +
-                "7\n", this.modelToAddRangePrint.getMusicState());
+                "4\n", this.modelToAddRangePrint.getMusicState());
 
     }
 
@@ -93,10 +81,7 @@ public class MusicEditorTest {
                 "1  |                                                                                                                                                                                                                                                                                            |  \n" +
                 "2  X                                                                                                                                                                                                                                                                                            |  \n" +
                 "3  |                                                                                                                                                                                                                                                                                            |  \n" +
-                "4\n" +
-                "5\n" +
-                "6\n" +
-                "7\n", modelToAddRangePrint.getMusicState());
+                "4\n", modelToAddRangePrint.getMusicState());
         assertEquals(8, this.modelToAddRangePrint.beatLength());
 
     }
@@ -105,23 +90,18 @@ public class MusicEditorTest {
     public void testAddBeatsPrint() {
         this.initData();
         this.model2ToAddBeatsPrint.addNote(0, new Note(Note.Pitch.DSHARP, 3, 4, 0, true));
-        assertEquals(8, model2ToAddBeatsPrint.beatLength());
+        assertEquals(3, model2ToAddBeatsPrint.beatLength());
         this.model2ToAddBeatsPrint.addBeats(4);
-        assertEquals(12, model2ToAddBeatsPrint.beatLength());
+        assertEquals(7, model2ToAddBeatsPrint.beatLength());
 
-        assertEquals("   D♯4 \n" +
-                " 0  X  \n" +
-                " 1  |  \n" +
-                " 2  |  \n" +
-                " 3\n" +
-                " 4\n" +
-                " 5\n" +
-                " 6\n" +
-                " 7\n" +
-                " 8\n" +
-                " 9\n" +
-                "10\n" +
-                "11\n", model2ToAddBeatsPrint.getMusicState());
+        assertEquals("  D♯4 \n" +
+                "0  X  \n" +
+                "1  |  \n" +
+                "2  |  \n" +
+                "3\n" +
+                "4\n" +
+                "5\n" +
+                "6\n", model2ToAddBeatsPrint.getMusicState());
 
         this.model2ToAddBeatsPrint.addNote(4, new Note(Note.Pitch.E, 4, 4, 4, true));
         assertEquals("   D♯4   E4 \n" +
@@ -135,9 +115,8 @@ public class MusicEditorTest {
                 " 7       |  \n" +
                 " 8\n" +
                 " 9\n" +
-                "10\n" +
-                "11\n", model2ToAddBeatsPrint.getMusicState());
-        assertEquals(12, model2ToAddBeatsPrint.beatLength());
+                "10\n", model2ToAddBeatsPrint.getMusicState());
+        assertEquals(11, model2ToAddBeatsPrint.beatLength());
     }
 
 
@@ -146,20 +125,12 @@ public class MusicEditorTest {
     public void testAddNoteBeatNoExist() {
         this.initData();
         this.model2ToAddBeatsPrint.addNote(0, new Note(Note.Pitch.DSHARP, 3, 4, 0, true));
-        assertEquals(8, model2ToAddBeatsPrint.beatLength());
+        assertEquals(3, model2ToAddBeatsPrint.beatLength());
         //this should throw an exception
         this.model2ToAddBeatsPrint.addNote(4, new Note(Note.Pitch.E, 4, 4, 4, true));
         //this should throw an exception
         this.model2ToAddBeatsPrint.addNote(-1, new Note(Note.Pitch.DSHARP, 7, 4, -1, true));
 
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testAddNoteNoFit() {
-        this.initData();
-        this.model2ToAddBeatsPrint.addNote(0, new Note(Note.Pitch.DSHARP, 4, 4, 0, true));
-        this.model2ToAddBeatsPrint.addNote(4, new Note(Note.Pitch.DSHARP, 4, 4, 0, true));
-        this.model2ToAddBeatsPrint.addNote(6, new Note(Note.Pitch.DSHARP, 4, 4, 0, true));
     }
 
     //Exceptions for removing
@@ -194,7 +165,7 @@ public class MusicEditorTest {
         this.initData();
         this.modelToAddRangePrint.addNote(0, new Note(Note.Pitch.E, 3, 4, 0, true));
         this.modelToAddRangePrint.addNote(0, new Note(Note.Pitch.G, 3, 6, 0, true));
-        assertEquals(8, this.modelToAddRangePrint.beatLength());
+        assertEquals(3, this.modelToAddRangePrint.beatLength());
         this.modelToAddRangePrint.addBeats(5);
         this.modelToAddRangePrint.addNote(4, new Note(Note.Pitch.FSHARP, 2, 6, 4, true));
         this.modelToAddRangePrint.addNote(7, new Note(Note.Pitch.A, 3, 4, 0, true));
@@ -204,7 +175,7 @@ public class MusicEditorTest {
         this.modelToAddRangePrint.mixMusic(model2ToAddBeatsPrint, 0);
         this.modelToAddRangePrint.trim(0, 4);
 
-        System.out.print(this.modelToAddRangePrint.getMusicState());
+        //System.out.print(this.modelToAddRangePrint.getMusicState());
 
     }
 
@@ -241,54 +212,23 @@ public class MusicEditorTest {
         assertEquals("   C2  C♯2   D2  D♯2   E2 \n" +
                 "0  X  \n" +
                 "1            X  \n" +
-                "2                      X  \n" +
-                "3\n" +
-                "4\n" +
-                "5\n" +
-                "6\n" +
-                "7\n", this.model2ToAddBeatsPrint.getMusicState());
+                "2                      X  \n", this.model2ToAddBeatsPrint.getMusicState());
         this.modelToAddRangePrint.addNote(0, new Note(Note.Pitch.C, 1, 2, 0, true));
         this.modelToAddRangePrint.addNote(1, new Note(Note.Pitch.D, 1, 2, 1, true));
         this.modelToAddRangePrint.addNote(2, new Note(Note.Pitch.E, 1, 2, 2, true));
         assertEquals("   C2  C♯2   D2  D♯2   E2 \n" +
                 "0  X  \n" +
                 "1            X  \n" +
-                "2                      X  \n" +
-                "3\n" +
-                "4\n" +
-                "5\n" +
-                "6\n" +
-                "7\n", this.modelToAddRangePrint.getMusicState());
+                "2                      X  \n", this.modelToAddRangePrint.getMusicState());
         this.model2ToAddBeatsPrint.musicConcat(this.modelToAddRangePrint);
-        assertEquals("    C2  C♯2   D2  D♯2   E2 \n" +
-                " 0  X  \n" +
-                " 1            X  \n" +
-                " 2                      X  \n" +
-                " 3\n" +
-                " 4\n" +
-                " 5\n" +
-                " 6\n" +
-                " 7\n" +
-                " 8  X  \n" +
-                " 9            X  \n" +
-                "10                      X  \n" +
-                "11\n" +
-                "12\n" +
-                "13\n" +
-                "14\n" +
-                "15\n" +
-                "16\n" +
-                "17\n" +
-                "18\n" +
-                "19\n" +
-                "20\n" +
-                "21\n" +
-                "22\n" +
-                "23\n" +
-                "24\n" +
-                "25\n" +
-                "26\n" +
-                "27\n", this.model2ToAddBeatsPrint.getMusicState());
+        assertEquals("   C2  C♯2   D2  D♯2   E2 \n" +
+                "0  X  \n" +
+                "1            X  \n" +
+                "2                      X  \n" +
+                "3  X  \n" +
+                "4            X  \n" +
+                "5                      X  \n", this.model2ToAddBeatsPrint.getMusicState());
+        this.model2ToAddBeatsPrint.getMusicState();
     }
 
     @Test
@@ -296,12 +236,8 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 100; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
 
-        this.modelToAddRangePrint.trim(99, 215);
         assertEquals(100, this.modelToAddRangePrint.beatLength());
     }
 
@@ -311,12 +247,9 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 2000; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
-        this.modelToAddRangePrint.trim(2000, 5831);
-        assertEquals(2001, this.modelToAddRangePrint.beatLength());
+
+        assertEquals(2000, this.modelToAddRangePrint.beatLength());
     }
 
     @Test
@@ -331,9 +264,6 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 100; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
         this.modelToAddRangePrint.trim(-1, 5);
 
@@ -344,9 +274,6 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 100; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
         this.modelToAddRangePrint.trim(10, 5);
 
@@ -357,9 +284,6 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 100; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
         this.modelToAddRangePrint.trim(10, -5);
     }
@@ -369,9 +293,6 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 100; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
         this.modelToAddRangePrint.trim(0, 10000);
 
@@ -382,9 +303,6 @@ public class MusicEditorTest {
         this.initData();
         for (int i = 0; i < 100; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
         this.modelToAddRangePrint.trim(1000, 1001);
 
@@ -393,31 +311,69 @@ public class MusicEditorTest {
     @Test
     public void testBigConcat() {
         this.initData();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 5000; i++) {
             this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= modelToAddRangePrint.beatLength() - 1) {
-                this.modelToAddRangePrint.addBeats(this.modelToAddRangePrint.beatLength() * 2);
-            }
         }
 
-        for (int i = 0; i < 100; i++) {
-            this.model2ToAddBeatsPrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
-            if (i >= model2ToAddBeatsPrint.beatLength() - 1) {
-                this.model2ToAddBeatsPrint.addBeats(this.model2ToAddBeatsPrint.beatLength() * 2);
-            }
+        for (int i = 0; i < 1000; i++) {
+            this.model2ToAddBeatsPrint.addNote(i, new Note(Note.Pitch.E, 1, 1, i, true));
         }
 
         modelToAddRangePrint.musicConcat(model2ToAddBeatsPrint);
-        System.out.print(modelToAddRangePrint.getMusicState());
 
     }
 
-    //TODO test a big number of notes
-    //TODO test a big number of range
-    //TODO trim's exceptions
-    //trim's new length
-    //trim the whole thing
-    //trim one beat
+    @Test
+    public void testBigMix() {
+        this.initData();
+        for (int i = 0; i < 1000; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+        }
+
+        for (int i = 0; i < 1000; i++) {
+            this.model2ToAddBeatsPrint.addNote(i, new Note(Note.Pitch.E, 1, 1, i, true));
+        }
+        //FIXME max and min stuff
+        modelToAddRangePrint.mixMusic(model2ToAddBeatsPrint, 0);
+        //FIXME this doesn't work
+       // System.out.print(modelToAddRangePrint.getMusicState());
+
+    }
+
+    @Test
+    public void testBigAdd() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+        }
+        this.modelToAddRangePrint.addBeats(Integer.MAX_VALUE);
+
+    }
+
+    @Test
+    public void testTrimSideEffect() {
+        this.initData();
+        for (int i = 0; i < 10000; i++) {
+            this.modelToAddRangePrint.addNote(i, new Note(Note.Pitch.G, 1, 1, i, true));
+        }
+
+        this.modelToAddRangePrint.trim(2000, 7000);
+        assertEquals(5000, this.modelToAddRangePrint.beatLength());
+    }
+
+    @Test
+    public void testDuplicateNotes() {
+        this.initData();
+        for (int i = 0; i < 100; i++) {
+            this.modelToAddRangePrint.addNote(0, new Note(Note.Pitch.G, 2, 1, 0, true));
+        }
+
+        assertEquals(2, this.modelToAddRangePrint.beatLength());
+    }
+
+
+    //cannot remove the last note in the piece
+
 
 
 

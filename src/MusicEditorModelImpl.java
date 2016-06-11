@@ -94,14 +94,21 @@ public class MusicEditorModelImpl extends AMusicEditorModel {
 
     @Override
     public void addBeats(int increase) {
-
         if ((this.beatLength() + increase) >= internalBeats) {
-            //FIXME
-            this.expandInteralBeats((int) Math.pow((double) increase, 2));
+            this.expandInteralBeats(increase);
         }
 
         this.addBeatNumberToRender(increase);
 
+        if (this.beatLength() > this.internalBeats) {
+            throw new IllegalArgumentException("Beat length cannot exceed internal beats");
+        }
+    }
+
+    @Override
+    public void trim(int from, int to) {
+        super.trim(from, to);
+        this.internalBeats -= to - from;
     }
 
 
@@ -135,16 +142,17 @@ public class MusicEditorModelImpl extends AMusicEditorModel {
     }
 
     @Override
-    protected void expandInteralBeats(int factor) {
-        for (int i = 0; i < (internalBeats * factor); i++) {
+    protected void expandInteralBeats(int increase) {
+        for (int i = 0; i < (increase); i++) {
+
             this.addBeatToNotes(new ArrayList<Note>());
         }
 
-        this.doubleInternalBeats(factor);
+        this.doubleInternalBeats(increase);
     }
 
-    private void doubleInternalBeats(int factor) {
-        internalBeats = internalBeats * factor;
+    private void doubleInternalBeats(int increase) {
+        internalBeats +=increase;
     }
 
 
